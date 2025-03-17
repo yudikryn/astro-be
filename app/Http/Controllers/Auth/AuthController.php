@@ -31,8 +31,7 @@ class AuthController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'User registered successfully!',
-            'user' => $user,
+            'message' => 'User registered successfully!'
         ], 201);
     }
 
@@ -49,7 +48,9 @@ class AuthController extends Controller
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-
+    
+            $user->makeHidden(['email_verified_at', 'created_at', 'updated_at']);
+    
             try {
                 return response()->json([
                     'message' => 'Login successful',
@@ -95,6 +96,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
+            'id' => $user->id,
             'email' => $user->email,
             'name' => $user->name,
             'phone' => $user->phone,
@@ -142,7 +144,7 @@ class AuthController extends Controller
     {
         $perPage = $request->input('per_page', 10);
 
-        $users = User::select('email', 'name', 'phone', 'address')
+        $users = User::select('id', 'email', 'name', 'phone', 'address')
             ->orderBy('name', 'asc')
             ->paginate($perPage);
 
